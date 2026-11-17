@@ -1,0 +1,433 @@
+
+/* Reset + Background */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  background: url("icon/background image.jpg") no-repeat center center fixed;
+  background-size: cover;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+table {
+  width: 100%;
+  min-height: 930px;
+  object-fit: cover;
+  border-collapse: collapse;
+}
+
+/* ===== Image Slider ===== */
+.slider {
+  position: relative;
+  width: 100%;
+  max-width: 500px;  /* flight image width */
+  height: 350px;     /* flight image height */
+  overflow: hidden;
+  border-radius: 10px;
+  margin-top: 0px;
+  margin-left: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+}
+
+.slides {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.7s ease-in-out;
+}
+
+.slides img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Buttons */
+.btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 50%;
+}
+
+.btn:hover {
+  background: rgba(0,0,0,0.9);
+}
+
+.prev { left: 15px; }
+.next { right: 15px; }
+
+/* ===== Dashboard Layout ===== */
+.dashboard {
+  display: flex;
+  flex: 1;
+  padding: 10px;
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.vertiport-panel {
+  margin-top: 20px;
+  background: rgba(10, 18, 32, 0.76);
+  border: 1px solid rgba(120, 170, 255, 0.28);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.28);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.panel-header h3 {
+  color: #eaf4ff;
+  font-size: 1.15rem;
+}
+
+.live-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.9);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.stat-card .label {
+  display: block;
+  font-size: 0.73rem;
+  color: #cfe2ff;
+  margin-bottom: 8px;
+}
+
+.stat-card strong {
+  display: block;
+  font-size: 1.8rem;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.stat-card small {
+  color: #d1d5db;
+  font-size: 0.7rem;
+}
+
+.stat-card.success { border-color: rgba(52, 211, 153, 0.38); }
+.stat-card.primary { border-color: rgba(96, 165, 250, 0.38); }
+.stat-card.warning { border-color: rgba(251, 191, 36, 0.38); }
+.stat-card.danger { border-color: rgba(248, 113, 113, 0.38); }
+
+.clearance-panel {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.clearance-header {
+  color: #dbeafe;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.clearance-list {
+  display: grid;
+  gap: 10px;
+}
+
+.clearance-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.flight-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.clearance-item strong {
+  color: #fff;
+}
+
+.clearance-item p {
+  margin: 0 0 4px;
+  color: #dbeafe;
+  font-size: 0.84rem;
+}
+
+.clearance-item small {
+  color: #bfdbfe;
+  font-size: 0.7rem;
+}
+
+.status {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.status.cleared {
+  background: rgba(52, 211, 153, 0.14);
+  color: #a7f3d0;
+}
+
+.status.hold {
+  background: rgba(250, 204, 21, 0.14);
+  color: #fcd34d;
+}
+
+.status.monitor {
+  background: rgba(96, 165, 250, 0.14);
+  color: #bfdbfe;
+}
+
+/* Left Panel */
+.left {
+  flex: 1;
+  padding: 10px;
+  min-width: 0;
+}
+
+.logo {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.left h2 {
+  font-size: 26px;
+  margin-bottom: 10px;
+}
+
+.left h2 span {
+  font-weight: bold;
+  color: #4fc3f7;
+}
+
+.aircraft {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+/* Right Panel */
+.right {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 15px;
+  min-width: 0;
+}
+
+.flight-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 35px;
+}
+
+.detail span {
+  font-size: 12px;
+  color: #ccc;
+}
+
+.detail strong {
+  font-size: 16px;
+  display: block;
+  margin-top: 4px;
+}
+
+/* Route Section */
+.route {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.city {
+  text-align: center;
+  flex: 1;
+}
+
+.progress {
+  flex: 2;
+  position: relative;
+  margin: 0 10px;
+}
+
+.line {
+  height: 2px;
+  background: #4fc3f7;
+  margin-top: 10px;
+}
+
+.plane-icon {
+  position: absolute;
+  top: -10px;
+  left: 40%;
+  font-size: 20px;
+}
+
+/* Time Info */
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+/* Extra Info */
+.extra {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.extra h4 {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+/* Bottom Navigation */
+.nav {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 12px;
+  font-size: 54px;
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+
+/* ===== Clock Box ===== */
+.clock-box {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 20px 40px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
+}
+
+.clock-title {
+  font-size: 16px;
+  color: #aaa;
+  margin-bottom: 8px;
+}
+
+.clock-time {
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #4fc3f7;
+}
+
+.clock-date {
+  font-size: 14px;
+  margin-top: 5px;
+  color: #ddd;
+}
+
+
+th{
+  height: 100% ;
+  width:fit-content;
+}
+
+
+
+/*slide page data*/
+ .prev { left: 10px; }
+    .next { right: 10px; }
+
+    /* Dashboard */
+    .dashboard {
+      width: 100%;
+      max-width: 1300px;
+      padding: 15px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 15px;
+      text-align: center;
+    }
+
+    .dashboard h2 {
+      margin-bottom: 10px;
+      color: #4fc3f7;
+    }
+
+    .dashboard p {
+      font-size: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard {
+        flex-direction: column;
+      }
+
+      .left, .right {
+        width: 100%;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .clock-box {
+        padding: 16px 18px;
+      }
+
+      .right {
+        padding: 14px;
+      }
+
+      .flight-details {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .time-info {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+      }
+    }

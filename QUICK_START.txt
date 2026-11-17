@@ -1,0 +1,78 @@
+========================================
+  eVTOL PROJECT - QUICK REFERENCE
+========================================
+
+FASTEST WAY TO START:
+  RUN.bat
+  (Then select option 1-6 from menu)
+
+OR SELECT A COMMAND BELOW:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. HTML FLIGHT DASHBOARD
+   python -m http.server 8000
+   Open: http://localhost:8000/home.html
+   ✓ Live clock
+   ✓ Flight info
+   ✓ Beautiful UI
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+2. OBJECT DETECTION (YOLOv8)
+   python object_detection.py
+   ✓ Real-time video detection
+   ✓ Flying object tracking
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3. ALTITUDE/HEIGHT DETECTION
+   python height_altitude.py
+   python height_detection.py
+   ✓ Height measurement
+   ✓ Vertical speed tracking
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+4. WEATHER API
+   cd jay_tiwari\backend
+   uvicorn main:app --reload
+   ✓ Real-time airport weather
+   ✓ Weather streaming
+   Open: http://localhost:8000
+   Docs: http://localhost:8000/docs
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+5. EMERGENCY PROCEDURE SYSTEM
+   cd "jay_tiwari\Emergency Procedure Prompts"
+   uvicorn app.main:app --reload
+   ✓ Fault detection
+   ✓ Emergency procedures
+   Open: http://localhost:8000/ui
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+6. MAIN PYTHON SCRIPT
+   python main.py
+   ✓ Main application entry point
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PORTS:
+  8000 = APIs & Dashboard
+  8080 = React Frontend (optional)
+
+PYTHON:
+  Version: 3.12.3 ✓
+  Environment: myenv/ ✓
+
+STATUS: ✅ ALL SYSTEMS READY
+
+Documentation:
+  FINAL_REPORT.txt      - Complete report
+  README_BUILD.md       - Detailed guide
+  BUILD_SUMMARY.txt     - Build status
+  AGENTS.md             - AI agent info
+
+========================================

@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Dashboard</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+    <table><th>
+  <div class="dashboard">
+    <!-- Left Section -->
+
+
+   <h1>
+    <h1><div class="clock-time" id="clock">--:--:--</div></h1>
+   <h3> <div class="clock-date" id="date">--</div></h3>
+  </div>
+ 
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --accent:#1fb6ff; --muted:#9aa6b2; --glass: rgba(255,255,255,0.03);
+      --success:#26a69a; --danger:#ff6b6b; --radius:12px; --gap:14px;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+   /* html,body{height:100%;margin:0;background:linear-gradient(180deg,#071025 0%, #0b1020 100%);color:#e6eef6}*/
+
+    .container{max-width:1100px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;gap:18px}
+    .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#7c5cff);display:flex;align-items:center;justify-content:center;font-weight:700}
+    h1{margin:0;font-size:20px}
+    p.lead{color:var(--muted);margin:2px 0 0;font-size:13px}
+
+    .grid{display:grid;grid-template-columns:360px 1fr;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:var(--radius);box-shadow:0 6px 18px rgba(2,6,23,0.6);}
+
+    /* left column */
+    .device-info{display:flex;flex-direction:column;gap:10px}
+    .badge{background:var(--glass);padding:8px 10px;border-radius:10px;font-size:13px;color:var(--muted)}
+    .version{font-size:18px;font-weight:600}
+
+    .actions{display:flex;gap:8px;margin-top:10px}
+    button{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px 12px;border-radius:10px;color:inherit;cursor:pointer}
+    button.primary{background:linear-gradient(90deg,var(--accent),#7c5cff);border:none}
+    button.ghost{background:transparent}
+
+    /* update list */
+    .updates-list{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+    .update-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))}
+    .update-meta{display:flex;flex-direction:column}
+    .update-title{font-weight:700}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* right column */
+    .panel-header{display:flex;justify-content:space-between;align-items:center}
+    .panel-body{margin-top:12px}
+
+    .progress{height:14px;background:rgba(255,255,255,0.04);border-radius:10px;overflow:hidden}
+    .progress > .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#7c5cff);transition:width 200ms linear}
+    .status{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+
+    .changelog{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:12px;border-radius:10px;margin-top:12px}
+    .note{font-size:13px;color:var(--muted)}
+
+    .row{display:flex;gap:10px;align-items:center}
+
+    footer{margin-top:20px;color:var(--muted);font-size:13px}
+
+    /* mobile */
+    @media (max-width:900px){
+      .grid{grid-template-columns:1fr;}
+      .logo{width:52px;height:52px}
+    }
+
+    /* small helpers */
+    .pill{padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03);font-size:12px}
+    input[type=file]{display:none}
+
+    .toast{position:fixed;right:18px;bottom:18px;background:#0b1220;padding:12px 16px;border-radius:10px;box-shadow:0 8px 30px rgba(2,6,23,0.7);}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">   <img src="C:\Users\DELL\Desktop\New folder\icon\icons8-update-64.png"> </div>
+      <div>
+        <h1>Infotainment — Update Center</h1>
+        <p class="lead">Simulated Over-The-Air & local update features — check, download, install, rollback.</p>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <div class="device-info">
+          <div class="badge">Vehicle: Model X • 2025</div>
+          <div>
+            <div class="version" id="currentVersion">Version —</div>
+            <div class="muted" id="installedDate">Installed on —</div>
+          </div>
+
+          <div class="row actions">
+            <button id="checkUpdatesBtn" class="ghost">Check for Updates</button>
+            <button id="uploadBtn" class="ghost">Upload Firmware</button>
+            <label for="fileInput" class="pill" id="fileLabel">Choose File</label>
+            <input id="fileInput" type="file" accept=".bin,.zip,.fw" />
+          </div>
+
+          <div class="updates-list" id="updatesList">
+            <!-- populated by JS -->
+          </div>
+
+          <div class="muted" style="margin-top:8px">Tip: This demo simulates downloads and install flows locally. No real firmware is changed.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="panel-header">
+          <div>
+            <strong>Update Panel</strong>
+            <div class="muted">Manage downloads, installs and schedule updates.</div>
+          </div>
+          <div class="pill" id="updateState">Idle</div>
+        </div>
+
+        <div class="panel-body">
+          <div style="display:flex;gap:12px;align-items:center;">
+            <button id="downloadBtn" class="primary">Download & Install</button>
+            <button id="pauseBtn">Pause</button>
+            <button id="cancelBtn">Cancel</button>
+            <button id="rollbackBtn">Rollback</button>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="progress" aria-hidden="true">
+              <div class="bar" id="progressBar"></div>
+            </div>
+            <div class="status">
+              <div class="muted" id="progressText">0%</div>
+              <div class="muted" id="speedText">—</div>
+            </div>
+          </div>
+
+          <div class="changelog" id="changelog">
+            <strong>Release notes</strong>
+            <div class="note" id="releaseNotes">No update selected.</div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <label class="muted">Schedule update:</label>
+            <input type="datetime-local" id="scheduleInput" />
+            <button id="scheduleBtn">Schedule</button>
+          </div>
+
+          <div style="margin-top:12px">
+            <strong>Settings</strong>
+            <div style="display:flex;gap:10px;margin-top:8px;align-items:center">
+              <label class="muted">Auto-download:</label>
+              <input type="checkbox" id="autoDownload" />
+              <label class="muted">Auto-install:</label>
+              <input type="checkbox" id="autoInstall" />
+            </div>
+          </div>
+
+        </div>
+
+        <footer>
+          <div>Current channel: <span id="channelLabel">Stable</span></div>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" aria-live="polite"></div>
+
+  <script>
+    /*
+      Infotainment Update Center — single-file demo.
+      - Uses localStorage to persist `currentVersion` and `previousVersion`.
+      - Simulates fetching update metadata, downloading, and installing.
+      - Supports: upload (local firmware), schedule (session-only), pause/cancel, rollback.
+    */
+
+    // ---------- Mock server data (in real life this comes from an update server) ----------
+    const MOCK_UPDATES = [
+      {version: '1.2.0', date: '2025-09-01', sizeMB: 120, notes: ['Improved maps rendering', 'Bluetooth stability fixes', 'Faster boot time']},
+      {version: '1.3.0', date: '2025-09-15', sizeMB: 220, notes: ['New UI theme support', 'Voice assistant improvements', 'Security patch CVE-2025-1234']},
+      {version: '2.0.0', date: '2025-10-01', sizeMB: 480, notes: ['Major OS upgrade', 'Multimedia engine overhaul', 'New developer mode (debug)']}
+    ];
+
+    // ---------- Local state & persistence ----------
+    const LS_KEYS = { CUR:'infot_current', PREV:'infot_previous', INSTALLED_DATE:'infot_date' };
+    const el = id => document.getElementById(id);
+
+    function initState(){
+      if(!localStorage.getItem(LS_KEYS.CUR)){
+        localStorage.setItem(LS_KEYS.CUR,'1.0.0');
+        localStorage.setItem(LS_KEYS.INSTALLED_DATE,new Date().toISOString());
+      }
+      renderDeviceInfo();
+      renderUpdatesList();
+      restoreUIFromPrefs();
+    }
+
+    function renderDeviceInfo(){
+      el('currentVersion').textContent = 'Version ' + localStorage.getItem(LS_KEYS.CUR);
+      const d = localStorage.getItem(LS_KEYS.INSTALLED_DATE);
+      el('installedDate').textContent = d ? ('Installed on ' + new Date(d).toLocaleString()) : 'Installed on —';
+    }
+
+    function renderUpdatesList(){
+      const container = el('updatesList'); container.innerHTML='';
+      MOCK_UPDATES.forEach(u => {
+        const item = document.createElement('div'); item.className='update-item';
+        item.innerHTML = `<div class='update-meta'><div class='update-title'>v${u.version} <span class='muted'>• ${u.sizeMB}MB</span></div><div class='muted'>${u.date}</div></div><div style='display:flex;gap:8px;align-items:center'><button class='ghost' data-version='${u.version}'>View</button><button class='primary' data-version='${u.version}'>Select</button></div>`;
+        container.appendChild(item);
+      });
+      // attach handlers
+      container.querySelectorAll('button').forEach(btn => btn.addEventListener('click', (ev)=>{
+        const v = ev.currentTarget.dataset.version;
+        const mode = ev.currentTarget.classList.contains('primary') ? 'select' : 'view';
+        const update = MOCK_UPDATES.find(x=>x.version===v);
+        if(mode==='view') showReleaseNotes(update);
+        else selectUpdate(update);
+      }));
+    }
+
+    // ---------- UI utilities ----------
+    function toast(msg){
+      const root = el('toastContainer');
+      const t = document.createElement('div'); t.className='toast'; t.textContent = msg;
+      root.appendChild(t);
+      setTimeout(()=>{t.style.opacity=0; t.style.transform='translateY(8px)';},2200);
+      setTimeout(()=>root.removeChild(t),3000);
+    }
+
+    // ---------- Update selection & release notes ----------
+    let selectedUpdate = null;
+    function showReleaseNotes(update){
+      selectedUpdate = update;
+      el('releaseNotes').innerHTML = `<div style='font-weight:600'>v${update.version} • ${update.date}</div><ul>${update.notes.map(n=>`<li>${n}</li>`).join('')}</ul>`;
+      el('updateState').textContent = `Selected v${update.version}`;
+    }
+
+    function selectUpdate(update){
+      showReleaseNotes(update);
+      toast('Update v' + update.version + ' selected');
+      // If auto-download is checked, start download
+      if(el('autoDownload').checked){
+        startDownload();
+      }
+    }
+
+    // ---------- Download / Install simulation ----------
+    let download = {running:false,progress:0,interval:null,bytesPerSec:0,paused:false};
+
+    function startDownload(){
+      if(!selectedUpdate){ toast('No update selected.'); return; }
+      if(download.running){ toast('Download already in progress'); return; }
+      download.running = true; download.paused=false; download.progress=0; el('updateState').textContent = 'Downloading';
+      el('progressBar').style.width='0%'; el('progressText').textContent='0%'; el('speedText').textContent='—';
+
+      // simulate variable download speed
+      download.interval = setInterval(()=>{
+        if(download.paused) return;
+        // random speed between 2 and 8 MB/s
+        const speed = Math.floor(Math.random()*6) + 2;
+        download.bytesPerSec = speed;
+        // progress percent per second = (speed MB / total MB) * 100
+        const total = selectedUpdate.sizeMB;
+        download.progress += (speed/total)*100;
+        if(download.progress >= 100){ download.progress = 100; finishDownload(); }
+        updateProgressUI();
+      }, 1000);
+      toast('Download started');
+    }
+
+    function updateProgressUI(){
+      el('progressBar').style.width = Math.round(download.progress) + '%';
+      el('progressText').textContent = Math.round(download.progress) + '%';
+      el('speedText').textContent = download.paused ? 'Paused' : (download.bytesPerSec + ' MB/s');
+    }
+
+    function finishDownload(){
+      clearInterval(download.interval); download.running=false; el('updateState').textContent = 'Downloaded'; updateProgressUI();
+      toast('Download complete — ready to install');
+      // auto-install if enabled
+      if(el('autoInstall').checked) installUpdate();
+    }
+
+    function pauseDownload(){
+      if(!download.running){ toast('No active download'); return; }
+      download.paused = !download.paused; el('pauseBtn').textContent = download.paused ? 'Resume' : 'Pause';
+      toast(download.paused ? 'Download paused' : 'Download resumed');
+    }
+
+    function cancelDownload(){
+      if(download.interval) clearInterval(download.interval);
+      download = {running:false,progress:0,interval:null,bytesPerSec:0,paused:false};
+      el('progressBar').style.width='0%'; el('progressText').textContent='0%'; el('speedText').textContent='—';
+      el('updateState').textContent = 'Idle'; el('pauseBtn').textContent='Pause';
+      toast('Download cancelled');
+    }
+
+    // ---------- Install simulation ----------
+    function installUpdate(){
+      if(selectedUpdate == null){ toast('No update selected to install'); return; }
+      if(download.running && download.progress < 100){ toast('Wait for download to complete'); return; }
+      el('updateState').textContent = 'Installing';
+      toast('Installing update...');
+      // show a fake install progress
+      let pct = 0;
+      const inst = setInterval(()=>{
+        pct += Math.floor(Math.random()*12) + 6; // jump faster
+        el('progressBar').style.width = Math.min(pct,100) + '%'; el('progressText').textContent = Math.min(pct,100) + '%';
+        if(pct >= 100){ clearInterval(inst); finalizeInstall(); }
+      }, 800);
+    }
+
+    function finalizeInstall(){
+      // save previous version for rollback
+      localStorage.setItem(LS_KEYS.PREV, localStorage.getItem(LS_KEYS.CUR));
+      localStorage.setItem(LS_KEYS.CUR, selectedUpdate.version);
+      localStorage.setItem(LS_KEYS.INSTALLED_DATE, new Date().toISOString());
+      renderDeviceInfo();
+      el('updateState').textContent = 'Up to date';
+      el('progressBar').style.width='0%'; el('progressText').textContent='0%'; el('speedText').textContent='—';
+      toast('Update installed successfully to v' + selectedUpdate.version);
+      // record channel label
+      el('channelLabel').textContent = 'Stable';
+    }
+
+    // ---------- Rollback ----------
+    function rollback(){
+      const prev = localStorage.getItem(LS_KEYS.PREV);
+      if(!prev){ toast('No previous version available'); return; }
+      // simulate quick rollback
+      toast('Rolling back to v' + prev);
+      setTimeout(()=>{
+        const cur = localStorage.getItem(LS_KEYS.CUR);
+        localStorage.setItem(LS_KEYS.CUR, prev);
+        localStorage.setItem(LS_KEYS.PREV, cur);
+        localStorage.setItem(LS_KEYS.INSTALLED_DATE, new Date().toISOString());
+        renderDeviceInfo();
+        toast('Rollback complete — now on v' + localStorage.getItem(LS_KEYS.CUR));
+      }, 1200);
+    }
+
+    // ---------- Schedule updates (session-only) ----------
+    let scheduleTimer = null;
+    function scheduleUpdate(){
+      const dt = el('scheduleInput').value;
+      if(!dt){ toast('Pick a date & time'); return; }
+      const when = new Date(dt).getTime();
+      const now = Date.now();
+      const diff = when - now;
+      if(diff <= 0){ toast('Pick a future time'); return; }
+      if(scheduleTimer) clearTimeout(scheduleTimer);
+      scheduleTimer = setTimeout(()=>{ toast('Scheduled update triggered'); startDownload(); }, diff);
+      toast('Update scheduled');
+    }
+
+    // ---------- Upload firmware (local) ----------
+    el('fileInput').addEventListener('change', (ev)=>{
+      const f = ev.target.files[0];
+      if(!f) return;
+      // Basic file-name-based version extraction for demo: name like fw_v1.4.0.bin
+      const m = f.name.match(/v(\d+\.\d+\.\d+)/i);
+      let ver = m ? m[1] : prompt('Could not detect version. Enter version (e.g. 1.4.0):');
+      if(!ver) { toast('Upload cancelled'); return; }
+      const uploaded = {version:ver,date:new Date().toISOString().split('T')[0],sizeMB:Math.max(10, Math.round(f.size/1024/1024)),notes:['Local firmware upload']};
+      selectedUpdate = uploaded; showReleaseNotes(uploaded);
+      toast('Firmware uploaded and selected: v' + ver);
+    });
+
+    el('uploadBtn').addEventListener('click', ()=> el('fileInput').click());
+
+    // ---------- Event wiring ----------
+    el('checkUpdatesBtn').addEventListener('click', ()=>{
+      toast('Checking for updates...');
+      // simulate network delay
+      setTimeout(()=>{
+        // choose the latest update that's greater than current
+        const cur = localStorage.getItem(LS_KEYS.CUR);
+        const available = MOCK_UPDATES.filter(u=>compareSemver(u.version,cur)===1);
+        if(available.length===0){ toast('No updates available'); el('updateState').textContent = 'Up to date'; return; }
+        // display first available (latest)
+        const latest = available[available.length-1];
+        showReleaseNotes(latest);
+        toast('Update found: v' + latest.version);
+      },1000);
+    });
+
+    el('downloadBtn').addEventListener('click', startDownload);
+    el('pauseBtn').addEventListener('click', pauseDownload);
+    el('cancelBtn').addEventListener('click', cancelDownload);
+    el('rollbackBtn').addEventListener('click', rollback);
+    el('scheduleBtn').addEventListener('click', scheduleUpdate);
+
+    // ---------- Helpers ----------
+    function compareSemver(a,b){
+      // returns 1 if a>b, 0 if equal, -1 if a<b
+      const pa = a.split('.').map(n=>parseInt(n,10));
+      const pb = b.split('.').map(n=>parseInt(n,10));
+      for(let i=0;i<3;i++){ if((pa[i]||0) > (pb[i]||0)) return 1; if((pa[i]||0) < (pb[i]||0)) return -1; }
+      return 0;
+    }
+
+    function restoreUIFromPrefs(){
+      // simple: keep auto options off by default
+      el('autoDownload').checked = false; el('autoInstall').checked = false;
+    }
+
+    // initial render
+    initState();
+
+    // accessibility & keyboard shortcuts (demo only)
+    document.addEventListener('keydown', (e)=>{
+      if(e.key==='u' && e.ctrlKey){ e.preventDefault(); el('checkUpdatesBtn').click(); }
+      if(e.key==='i' && e.ctrlKey){ e.preventDefault(); el('downloadBtn').click(); }
+    });
+
+  </script>
+</body>
+</html>
+
+      
+
+  
+</th>
+  
+<th>
+    <!-- Right Section -->
+    <div class="right">
+      <div class="flight-details">
+        <div class="detail">
+         <h1><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-battery-96.png"></h1>
+         
+
+<!--bettery status-->
+<style>
+    
+
+    .battery-container {
+      text-align: center;
+      
+      padding: 20px;
+      border-radius: 12px;
+      width: 300px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+    }
+
+    .battery {
+      width: 120px;
+      height: 50px;
+      border: 4px solid #fff;
+      border-radius: 6px;
+      margin: 20px auto;
+      position: relative;
+      background: #111;
+      overflow: hidden;
+    }
+
+    /* Battery head */
+    .battery::after {
+      content: "";
+      position: absolute;
+      top: 12px;
+      right: -12px;
+      width: 10px;
+      height: 24px;
+      background: #fff;
+      border-radius: 2px;
+    }
+
+    /* Battery fill */
+    .battery-fill {
+      height: 100%;
+      width: 50%;
+      background: limegreen;
+      transition: width 0.3s ease, background 0.3s ease;
+    }
+
+    .battery-value {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin-top: 15px;
+    }
+  </style>
+
+  <div class="battery-container">
+    <h2>Battery Status</h2>
+
+    <!-- Battery image -->
+    <div class="battery">
+      <div class="battery-fill" id="batteryFill"></div>
+    </div>
+
+    <!-- Percentage text -->
+    <div class="battery-value" id="batteryValue">50%</div>
+
+    <!-- Slider to simulate battery % -->
+    <input type="range" id="batterySlider" min="0" max="100" value="50">
+  </div>
+        </div>
+  <script>
+    const slider = document.getElementById("batterySlider");
+    const fill = document.getElementById("batteryFill");
+    const value = document.getElementById("batteryValue");
+
+    function updateBattery(level) {
+      value.textContent = level + "%";
+      fill.style.width = level + "%";
+
+      // Change color based on level
+      if (level <= 20) {
+        fill.style.background = "red";
+      } else if (level <= 50) {
+        fill.style.background = "orange";
+      } else {
+        fill.style.background = "limegreen";
+      }
+    }
+
+    // Initialize
+    updateBattery(slider.value);
+
+    // Update when slider moves
+    slider.addEventListener("input", () => {
+      updateBattery(slider.value);
+    });
+  </script> 
+
+
+
+        <div class="detail">
+          
+ <!--brightness-->
+<div class="brightness-container">
+    <!-- Brightness Icon -->
+    <button class="icon-btn" id="brightnessIcon"><img src="icon/icons8-brightness-48.png"></button>
+
+    <!-- Hidden brightness controls -->
+    <div class="brightness-controls" id="brightnessControls">
+      <h3>Adjust Brightness</h3>
+      <input type="range" id="brightnessSlider" min="50" max="150" value="100">
+      <div class="brightness-value" id="brightnessValue">100%</div>
+    </div>
+
+
+
+
+
+
+<!--volume-->
+
+<div class="volume-card">
+    <h2>Volume Control</h2>
+    <input type="range" id="volumeSlider" min="0" max="100" value="50">
+    <div class="volume-value" id="volumeValue">50%</div>
+    
+    <!-- Example audio to test volume -->
+    <audio id="audioPlayer" controls>
+      <source src="sample.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio> 
+  </div>
+        <div>
+         
+        
+      
+  
+  </div>
+</th>
+</tr>
+<th colspan="2">
+
+  <!-- Bottom Navigation -->
+  <div class="nav">
+   <a href="home.html"> <div><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-home-48.png"></div></a>
+   <a href="setting.html"><div><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-settings-48.png"></div></a>
+   <a href=".html"><div><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-phone-48.png"></div></a>
+   <a href=".html"><div><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-engine-48.png"></div></a>
+   <a href=".html"><div><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-map-50.png"></div></a>
+   <a href=".html"><div><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-more-48.png"></div></a>
+  </div>
+</body>
+</html>
+
+
+
+
+<!--time js showing -->
+ <script>
+    function updateClock() {
+      const now = new Date();
+
+      // Format Time
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      let seconds = now.getSeconds();
+
+      // Add AM/PM
+      let ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12;
+      hours = hours ? hours : 12; // 0 becomes 12
+
+      // Add leading zeros
+      hours = hours.toString().padStart(2, '0');
+      minutes = minutes.toString().padStart(2, '0');
+      seconds = seconds.toString().padStart(2, '0');
+
+      const timeString = `${hours}:${minutes}:${seconds} ${ampm}`;
+      document.getElementById("clock").textContent = timeString;
+
+      // Format Date
+      const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+      document.getElementById("date").textContent = now.toLocaleDateString(undefined, options);
+    }
+
+    // Update every second
+    setInterval(updateClock, 1000);
+    updateClock(); // Initial call
+  </script>
+
+
+
+
+
+
+
+
+  <!--volume js -->
+  <script>
+    const slider = document.getElementById("volumeSlider");
+    const value = document.getElementById("volumeValue");
+    const audio = document.getElementById("audioPlayer");
+
+    // set default volume
+    audio.volume = slider.value / 100;
+
+    slider.addEventListener("input", () => {
+      value.textContent = slider.value + "%";
+      audio.volume = slider.value / 100;
+    });
+  </script>
+
+
+
+  <!--brightness adjust-->
+
+  <script>
+    const icon = document.getElementById("brightnessIcon");
+    const controls = document.getElementById("brightnessControls");
+    const slider1 = document.getElementById("brightnessSlider");
+    const value1 = document.getElementById("brightnessValue");
+    const screen = document.getElementById("screenArea");
+
+
+    // Toggle controls on icon click
+    icon.addEventListener("click", () => {
+      controls.style.display = controls.style.display === "none" ? "block" : "none";
+    });
+
+    // Adjust brightness
+    slider.addEventListener("input", () => {
+      value.textContent = slider.value + "%";
+      screen.style.filter = `brightness(${slider.value}%)`;
+    });
+  </script>

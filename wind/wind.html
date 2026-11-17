@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>eVTOL Wind Conditions Dashboard</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b1c2d;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .dashboard {
+      background: #12263a;
+      padding: 30px;
+      border-radius: 12px;
+      width: 380px;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(0, 149, 255, 0.534);
+    }
+
+    h1 {
+      color: #4db8ff;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #1c3b57;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 10px;
+    }
+
+    .label {
+      font-size: 16px;
+      color: #cce6ff;
+    }
+
+    .value {
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 6px;
+    }
+
+    .turbulence {
+      font-size: 22px;
+      font-weight: bold;
+      padding: 8px;
+      border-radius: 6px;
+      margin-top: 6px;
+    }
+
+    .low {
+      background: #2ecc71;
+    }
+
+    .medium {
+      background: #f39c12;
+    }
+
+    .high {
+      background: #e74c3c;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 25px;
+      background: #4db8ff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      color: #000;
+    }
+
+    button:hover {
+      background: #3399ff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="dashboard">
+    <h1>eVTOL Wind Dashboard</h1>
+
+    <div class="card">
+      <div class="label">Wind Speed</div>
+      <div class="value" id="windSpeed">0 km/h</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Wind Direction</div>
+      <div class="value" id="windDirection">N</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Turbulence Level</div>
+      <div class="turbulence low" id="turbulence">LOW</div>
+    </div>
+
+    <button onclick="updateWindData()">Update Wind Conditions</button>
+  </div>
+
+  <script>
+    function updateWindData() {
+      // Generate random wind speed
+      const windSpeed = Math.floor(Math.random() * 121); // 0–120 km/h
+
+      // Wind directions
+      const directions = ["North", "South", "East","West", "North-East", "South-East", "West", "North-West"];
+      const windDirection = directions[Math.floor(Math.random() * directions.length)];
+
+      let turbulenceText = "";
+      let turbulenceClass = "";
+
+      // Turbulence logic
+      if (windSpeed < 30) {
+        turbulenceText = "LOW";
+        turbulenceClass = "low";
+      } else if (windSpeed < 70) {
+        turbulenceText = "MEDIUM";
+        turbulenceClass = "medium";
+      } else {
+        turbulenceText = "HIGH";
+        turbulenceClass = "high";
+      }
+
+      // Update UI
+      document.getElementById("windSpeed").innerText = windSpeed + " km/h";
+      document.getElementById("windDirection").innerText = windDirection;
+
+      const turbulence = document.getElementById("turbulence");
+      turbulence.innerText = turbulenceText;
+      turbulence.className = "turbulence " + turbulenceClass;
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+myenv/
+myvenv/
+.venv/
+.venv-1/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+build/
+dist/
+*.log
+.env
+*.key
+*.pem
+*.jks
+*.keystore
+.vscode/
+
+# Python virtual environments
+myenv/
+myvenv/
+.venv/
+.venv-1/
+
+# Environment variables
+.env
+*.env
+!.env.example
+
+# Environment files
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*

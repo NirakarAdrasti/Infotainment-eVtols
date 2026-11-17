@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Battery Indicator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f1724;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .battery-container {
+      text-align: center;
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      width: 300px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+    }
+
+    .battery {
+      width: 120px;
+      height: 50px;
+      border: 4px solid #fff;
+      border-radius: 6px;
+      margin: 20px auto;
+      position: relative;
+      background: #111;
+      overflow: hidden;
+    }
+
+    /* Battery head */
+    .battery::after {
+      content: "";
+      position: absolute;
+      top: 12px;
+      right: -12px;
+      width: 10px;
+      height: 24px;
+      background: #fff;
+      border-radius: 2px;
+    }
+
+    /* Battery fill */
+    .battery-fill {
+      height: 100%;
+      width: 50%;
+      background: limegreen;
+      transition: width 0.3s ease, background 0.3s ease;
+    }
+
+    .battery-value {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="battery-container">
+    <h2>Battery Status</h2>
+
+    <!-- Battery image -->
+    <div class="battery">
+      <div class="battery-fill" id="batteryFill"></div>
+    </div>
+
+    <!-- Percentage text -->
+    <div class="battery-value" id="batteryValue">50%</div>
+
+    <!-- Slider to simulate battery % -->
+    <input type="range" id="batterySlider" min="0" max="100" value="50">
+  </div>
+
+  <script>
+    const slider = document.getElementById("batterySlider");
+    const fill = document.getElementById("batteryFill");
+    const value = document.getElementById("batteryValue");
+
+    function updateBattery(level) {
+      value.textContent = level + "%";
+      fill.style.width = level + "%";
+
+      // Change color based on level
+      if (level <= 20) {
+        fill.style.background = "red";
+      } else if (level <= 50) {
+        fill.style.background = "orange";
+      } else {
+        fill.style.background = "limegreen";
+      }
+    }
+
+    // Initialize
+    updateBattery(slider.value);
+
+    // Update when slider moves
+    slider.addEventListener("input", () => {
+      updateBattery(slider.value);
+    });
+  </script>
+</body>
+</html>

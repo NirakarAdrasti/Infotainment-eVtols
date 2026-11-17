@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flight Route Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: #07111f; color: #f8fafc; }
+    #map { position: absolute; inset: 0; }
+    #panel {
+      position: absolute; z-index: 1000; left: 12px; top: 12px;
+      width: min(360px, calc(100% - 24px));
+      background: rgba(15, 23, 42, 0.92); border: 1px solid #334155; border-radius: 12px;
+      padding: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    h3 { margin: 0 0 10px; font-size: 18px; }
+    label { display: block; font-size: 13px; margin-top: 8px; color: #cbd5e1; }
+    input, button, select { width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 8px; border: 1px solid #475569; margin-top: 4px; }
+    button { background: #22c55e; color: white; font-weight: 600; cursor: pointer; border: none; margin-top: 10px; }
+    button.secondary { background: #38bdf8; }
+    .row { display: flex; gap: 8px; }
+    .info { margin-top: 10px; font-size: 13px; color: #e2e8f0; }
+    .small { font-size: 12px; color: #94a3b8; margin-top: 6px; }
+    .pill { display: inline-block; margin-top: 8px; padding: 4px 8px; background: #1e293b; border-radius: 999px; font-size: 12px; }
+    .station-card {
+      margin-top: 12px; padding: 10px 12px; border-radius: 10px;
+      border: 1px solid #334155; background: rgba(15, 118, 110, 0.12);
+    }
+    .station-card strong { display: block; margin-bottom: 6px; }
+    .station-list { margin-top: 10px; display: grid; gap: 8px; }
+    .station-item {
+      padding: 8px 10px; border-radius: 8px; background: rgba(30, 41, 59, 0.9);
+      border: 1px solid #334155; font-size: 12px; line-height: 1.5;
+    }
+    .station-item b { color: #f8fafc; }
+    .charging-icon {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: linear-gradient(135deg, #22c55e, #10b981);
+      border: 2px solid #f8fafc; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.5);
+      color: white; font-size: 12px; display: flex; align-items: center; justify-content: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="panel">
+    <h3>Flight Route Planner</h3>
+    <label for="startInput">Start address</label>
+    <input id="startInput" type="text" placeholder="Enter start point" />
+    <label for="endInput">Destination address</label>
+    <input id="endInput" type="text" placeholder="Enter destination" />
+    <div class="row">
+      <button onclick="showRouteFromInputs()">Show Route</button>
+      <button class="secondary" onclick="resetMap()">Reset</button>
+    </div>
+    <div class="small">Tip: click on the map to set the start or destination point.</div>
+    <div class="row" style="margin-top:8px;">
+      <button class="secondary" onclick="setActivePoint('start')">Set Start Point</button>
+      <button class="secondary" onclick="setActivePoint('destination')">Set Destination</button>
+    </div>
+    <label style="margin-top:10px;">Location</label>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:4px;">
+      <input id="highAccuracy" type="checkbox" style="width:auto;margin:0;" />
+      <div style="font-size:13px;color:#cbd5e1;flex:1;">High accuracy</div>
+    </div>
+    <div class="row" style="margin-top:8px;">
+      <button onclick="getLocationAndSet('start')">Use My Location (Start)</button>
+      <button onclick="getLocationAndSet('destination')">Use My Location (Destination)</button>
+    </div>
+    <div class="row" style="margin-top:8px;">
+      <button class="secondary" onclick="locateMe()">Locate Me</button>
+      <button id="trackBtn" class="secondary" onclick="toggleTracking()">Start Tracking</button>
+    </div>
+    <label for="flightAltitude">Flight altitude (m)</label>
+    <input id="flightAltitude" type="number" value="240" min="0" step="10" />
+    <div class="info">
+      <div><strong>Start:</strong> <span id="startLabel">-</span></div>
+      <div><strong>Destination:</strong> <span id="endLabel">-</span></div>
+      <div><strong>Total distance:</strong> <span id="distanceLabel">-</span></div>
+      <div><strong>Estimated flight time:</strong> <span id="timeLabel">-</span></div>
+    </div>
+
+    <div class="station-card">
+      <strong>Flight 3D position</strong>
+      <div id="flight3dLabel">-</div>
+    </div>
+
+    <div class="station-card">
+      <strong>Nearest charging station</strong>
+      <div id="nearestStationLabel">-</div>
+      <div class="station-list" id="stationList"></div>
+    </div>
+  </div>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([12.9716, 77.5946], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let startPoint = null;
+    let destinationPoint = null;
+    let activePoint = 'start';
+    let startMarker = null;
+    let destinationMarker = null;
+    let routeLine = null;
+    let startName = '-';
+    let destinationName = '-';
+    let chargingMarkers = [];
+    let stationPaths = [];
+    let flightMarker = null;
+
+    const chargingIcon = L.divIcon({
+      className: 'charging-icon-wrapper',
+      html: '<div class="charging-icon">⚡</div>',
+      iconSize: [22, 22],
+      iconAnchor: [11, 11],
+      popupAnchor: [0, -10]
+    });
+
+    const chargingStations = [
+      { name: 'SkyCharge Hub', lat: 12.9795, lng: 77.5930, altitude: 125, type: 'Fast Charge' },
+      { name: 'CityVolt Station', lat: 12.9658, lng: 77.5997, altitude: 140, type: 'Ultra Fast' },
+      { name: 'Airport Energy Point', lat: 12.9772, lng: 77.6105, altitude: 110, type: 'Taxiway Charge' },
+      { name: 'GreenHub Terminal', lat: 12.9550, lng: 77.5820, altitude: 160, type: 'Fast Charge' },
+      { name: 'DroneGrid Station', lat: 12.9880, lng: 77.5755, altitude: 135, type: 'Smart Charge' },
+      { name: 'Metro Charge Base', lat: 12.9729, lng: 77.5685, altitude: 120, type: 'Rapid Charge' }
+    ];
+
+    function setActivePoint(point) {
+      activePoint = point;
+      const label = point === 'start' ? 'Start point selected' : 'Destination point selected';
+      document.getElementById('distanceLabel').textContent = label;
+    }
+
+    function resetMap() {
+      if (startMarker) map.removeLayer(startMarker);
+      if (destinationMarker) map.removeLayer(destinationMarker);
+      if (routeLine) map.removeLayer(routeLine);
+      if (flightMarker) map.removeLayer(flightMarker);
+      chargingMarkers.forEach(marker => map.removeLayer(marker));
+      stationPaths.forEach(path => map.removeLayer(path));
+      chargingMarkers = [];
+      stationPaths = [];
+      flightMarker = null;
+      startPoint = null;
+      destinationPoint = null;
+      startName = '-';
+      destinationName = '-';
+      document.getElementById('startInput').value = '';
+      document.getElementById('endInput').value = '';
+      document.getElementById('startLabel').textContent = '-';
+      document.getElementById('endLabel').textContent = '-';
+      document.getElementById('distanceLabel').textContent = '-';
+      document.getElementById('timeLabel').textContent = '-';
+      document.getElementById('flight3dLabel').textContent = '-';
+      document.getElementById('nearestStationLabel').textContent = '-';
+      document.getElementById('stationList').innerHTML = '';
+      activePoint = 'start';
+    }
+
+    map.on('click', async function (e) {
+      const coord = [e.latlng.lat, e.latlng.lng];
+      if (activePoint === 'start') {
+        startPoint = coord;
+        if (startMarker) map.removeLayer(startMarker);
+        startMarker = L.marker([coord[0], coord[1]], { title: 'Start' }).addTo(map);
+        startMarker.bindPopup('Start point').openPopup();
+        try {
+          const rev = await reverseGeocode(coord[0], coord[1]);
+          startName = rev.displayName;
+          document.getElementById('startInput').value = startName;
+          document.getElementById('startLabel').textContent = startName;
+        } catch (err) {
+          document.getElementById('startLabel').textContent = `${coord[0].toFixed(4)}, ${coord[1].toFixed(4)}`;
+        }
+      } else {
+        destinationPoint = coord;
+        if (destinationMarker) map.removeLayer(destinationMarker);
+        destinationMarker = L.marker([coord[0], coord[1]], { title: 'Destination' }).addTo(map);
+        destinationMarker.bindPopup('Destination point').openPopup();
+        try {
+          const rev = await reverseGeocode(coord[0], coord[1]);
+          destinationName = rev.displayName;
+          document.getElementById('endInput').value = destinationName;
+          document.getElementById('endLabel').textContent = destinationName;
+        } catch (err) {
+          document.getElementById('endLabel').textContent = `${coord[0].toFixed(4)}, ${coord[1].toFixed(4)}`;
+        }
+      }
+      if (startPoint && destinationPoint) drawRoute();
+    });
+
+    async function geocodeAddress(address) {
+      const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(address)}`;
+      const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      const data = await response.json();
+      if (!data.length) throw new Error('Address not found');
+      return {
+        lat: parseFloat(data[0].lat),
+        lon: parseFloat(data[0].lon),
+        displayName: data[0].display_name
+      };
+    }
+
+    async function reverseGeocode(lat, lon) {
+      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
+      const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      const data = await response.json();
+      if (!data || !data.display_name) throw new Error('Reverse geocoding failed');
+      return { displayName: data.display_name };
+    }
+
+    function toKm(distanceMeters) {
+      return (distanceMeters / 1000).toFixed(2);
+    }
+
+    function haversineDistance(a, b) {
+      const toRad = value => value * Math.PI / 180;
+      const R = 6371000;
+      const dLat = toRad(b[0] - a[0]);
+      const dLon = toRad(b[1] - a[1]);
+      const lat1 = toRad(a[0]);
+      const lat2 = toRad(b[0]);
+      const sinDLat = Math.sin(dLat / 2);
+      const sinDLon = Math.sin(dLon / 2);
+      const h = sinDLat * sinDLat + Math.cos(lat1) * Math.cos(lat2) * sinDLon * sinDLon;
+      return 2 * R * Math.asin(Math.sqrt(h));
+    }
+
+    function updateSummary(distanceKm) {
+      document.getElementById('distanceLabel').textContent = `${distanceKm} km`;
+      const timeHours = distanceKm / 450;
+      const hours = Math.floor(timeHours);
+      const minutes = Math.round((timeHours - hours) * 60);
+      const timeText = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+      document.getElementById('timeLabel').textContent = timeText;
+      document.getElementById('startLabel').textContent = startName;
+      document.getElementById('endLabel').textContent = destinationName;
+    }
+
+    function getFlightPosition() {
+      const altitude = Number(document.getElementById('flightAltitude').value || 0);
+      if (startPoint && destinationPoint) {
+        return {
+          lat: (startPoint[0] + destinationPoint[0]) / 2,
+          lon: (startPoint[1] + destinationPoint[1]) / 2,
+          altitude: altitude || 220
+        };
+      }
+      if (startPoint) return { lat: startPoint[0], lon: startPoint[1], altitude: altitude || 220 };
+      if (destinationPoint) return { lat: destinationPoint[0], lon: destinationPoint[1], altitude: altitude || 220 };
+      return { lat: 12.9716, lon: 77.5946, altitude: altitude || 220 };
+    }
+
+    function formatDistance(meters) {
+      if (meters >= 1000) return `${(meters / 1000).toFixed(2)} km`;
+      return `${Math.round(meters)} m`;
+    }
+
+    function calculate3dDistance(pointA, pointB) {
+      const horizontalDistance = haversineDistance([pointA.lat, pointA.lon], [pointB.lat, pointB.lon]);
+      const verticalDifference = Math.abs((pointA.altitude || 0) - (pointB.altitude || 0));
+      return Math.sqrt(horizontalDistance * horizontalDistance + verticalDifference * verticalDifference);
+    }
+
+    function createStationRoute(flightPosition, station) {
+      const midLat = (flightPosition.lat + station.lat) / 2;
+      const midLon = (flightPosition.lon + station.lng) / 2;
+      const curveOffsetLat = (station.lat - flightPosition.lat) * 0.22;
+      const curveOffsetLon = (station.lng - flightPosition.lon) * 0.22;
+
+      return [
+        [flightPosition.lat, flightPosition.lon],
+        [midLat + curveOffsetLat, midLon + curveOffsetLon],
+        [station.lat, station.lng]
+      ];
+    }
+
+    function drawChargingStations() {
+      chargingMarkers.forEach(marker => map.removeLayer(marker));
+      stationPaths.forEach(path => map.removeLayer(path));
+      chargingMarkers = [];
+      stationPaths = [];
+
+      const flightPosition = getFlightPosition();
+      const stationData = chargingStations
+        .map(station => ({
+          ...station,
+          horizontalDistance: haversineDistance([flightPosition.lat, flightPosition.lon], [station.lat, station.lng]),
+          threeDDistance: calculate3dDistance(flightPosition, station),
+        }))
+        .sort((a, b) => a.threeDDistance - b.threeDDistance);
+
+      document.getElementById('flight3dLabel').textContent = `${flightPosition.lat.toFixed(4)}, ${flightPosition.lon.toFixed(4)}, ${flightPosition.altitude} m`;
+
+      if (flightMarker) map.removeLayer(flightMarker);
+      flightMarker = L.circleMarker([flightPosition.lat, flightPosition.lon], {
+        radius: 8,
+        color: '#f8fafc',
+        fillColor: '#22c55e',
+        fillOpacity: 1,
+        weight: 3
+      }).addTo(map);
+      flightMarker.bindPopup(`Flight location<br>Lat: ${flightPosition.lat.toFixed(4)}<br>Lon: ${flightPosition.lon.toFixed(4)}<br>Alt: ${flightPosition.altitude} m`);
+
+      stationData.slice(0, 4).forEach((station, index) => {
+        const route = L.polyline(createStationRoute(flightPosition, station), {
+          color: index === 0 ? '#facc15' : '#38bdf8',
+          weight: 2.5,
+          opacity: 0.9,
+          dashArray: '8 10'
+        }).addTo(map);
+        stationPaths.push(route);
+
+        const marker = L.marker([station.lat, station.lng], {
+          icon: chargingIcon,
+          title: station.name
+        }).addTo(map);
+
+        marker.bindPopup(`
+          <strong>${station.name}</strong><br>
+          Type: ${station.type}<br>
+          Distance: ${formatDistance(station.threeDDistance)}<br>
+          3D: ${station.lat.toFixed(4)}, ${station.lng.toFixed(4)}, ${station.altitude} m
+        `);
+
+        chargingMarkers.push(marker);
+      });
+
+      const nearest = stationData[0];
+      const stationList = document.getElementById('stationList');
+      stationList.innerHTML = stationData.slice(0, 4).map((station, index) => `
+        <div class="station-item">
+          <b>${index === 0 ? 'Closest: ' : ''}${station.name}</b><br>
+          ${station.type}<br>
+          3D distance: ${formatDistance(station.threeDDistance)}<br>
+          Horizontal: ${formatDistance(station.horizontalDistance)}<br>
+          Altitude: ${station.altitude} m
+        </div>
+      `).join('');
+
+      document.getElementById('nearestStationLabel').textContent = nearest
+        ? `${nearest.name} · ${formatDistance(nearest.threeDDistance)} away · Alt ${nearest.altitude} m`
+        : '-';
+    }
+
+    function drawRoute() {
+      if (!startPoint || !destinationPoint) return;
+      if (routeLine) map.removeLayer(routeLine);
+      routeLine = L.polyline([[startPoint[0], startPoint[1]], [destinationPoint[0], destinationPoint[1]]], {
+        color: '#22c55e',
+        weight: 6,
+        opacity: 0.85
+      }).addTo(map);
+
+      const distanceKm = (haversineDistance(startPoint, destinationPoint) / 1000).toFixed(2);
+      updateSummary(distanceKm);
+      drawChargingStations();
+      map.fitBounds(routeLine.getBounds(), { padding: [40, 40] });
+    }
+
+    async function showRouteFromInputs() {
+      const startInput = document.getElementById('startInput').value.trim();
+      const endInput = document.getElementById('endInput').value.trim();
+      if (!startInput || !endInput) {
+        alert('Please enter both start and destination addresses.');
+        return;
+      }
+
+      try {
+        const startResult = await geocodeAddress(startInput);
+        const endResult = await geocodeAddress(endInput);
+
+        startPoint = [startResult.lat, startResult.lon];
+        destinationPoint = [endResult.lat, endResult.lon];
+        startName = startResult.displayName;
+        destinationName = endResult.displayName;
+
+        if (startMarker) map.removeLayer(startMarker);
+        if (destinationMarker) map.removeLayer(destinationMarker);
+
+        startMarker = L.marker(startPoint).addTo(map);
+        startMarker.bindPopup('Start point');
+        destinationMarker = L.marker(destinationPoint).addTo(map);
+        destinationMarker.bindPopup('Destination point');
+
+        drawRoute();
+      } catch (err) {
+        alert(err.message || 'Unable to find the address.');
+      }
+    }
+
+    // Geolocation helpers
+    let currMarker = null;
+    let accuracyCircle = null;
+    let watchId = null;
+
+    async function _handlePosition(pos, useFor, panTo) {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      const accuracy = pos.coords.accuracy || 0;
+
+      if (currMarker) map.removeLayer(currMarker);
+      if (accuracyCircle) map.removeLayer(accuracyCircle);
+
+      currMarker = L.marker([lat, lon], { title: 'Your location' }).addTo(map);
+      currMarker.bindPopup(`You are here<br/>Accuracy: ${Math.round(accuracy)} m`).openPopup();
+      accuracyCircle = L.circle([lat, lon], { radius: Math.max(accuracy, 5), color: '#38bdf8', fillOpacity: 0.12 }).addTo(map);
+
+      if (useFor === 'start') {
+        startPoint = [lat, lon];
+        startName = 'Current location';
+        if (startMarker) map.removeLayer(startMarker);
+        startMarker = L.marker(startPoint).addTo(map);
+        startMarker.bindPopup('Start point (from device)');
+        try {
+          const rev = await reverseGeocode(lat, lon);
+          startName = rev.displayName;
+          document.getElementById('startInput').value = startName;
+          document.getElementById('startLabel').textContent = startName;
+        } catch (err) {
+          document.getElementById('startLabel').textContent = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+        }
+      } else if (useFor === 'destination') {
+        destinationPoint = [lat, lon];
+        destinationName = 'Current location';
+        if (destinationMarker) map.removeLayer(destinationMarker);
+        destinationMarker = L.marker(destinationPoint).addTo(map);
+        destinationMarker.bindPopup('Destination point (from device)');
+        try {
+          const rev = await reverseGeocode(lat, lon);
+          destinationName = rev.displayName;
+          document.getElementById('endInput').value = destinationName;
+          document.getElementById('endLabel').textContent = destinationName;
+        } catch (err) {
+          document.getElementById('endLabel').textContent = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+        }
+      }
+
+      if (panTo) map.setView([lat, lon], Math.max(map.getZoom(), 14));
+      if (startPoint && destinationPoint) drawRoute();
+      else drawChargingStations();
+    }
+
+    function _handleGeoError(err) {
+      console.warn('Geolocation error', err);
+      alert('Unable to get location: ' + (err.message || err.code));
+    }
+
+    function getLocationAndSet(useFor) {
+      if (!navigator.geolocation) { alert('Geolocation not supported by this browser.'); return; }
+      const high = document.getElementById('highAccuracy').checked;
+      navigator.geolocation.getCurrentPosition(
+        pos => _handlePosition(pos, useFor, true),
+        _handleGeoError,
+        { enableHighAccuracy: high, maximumAge: 0, timeout: 20000 }
+      );
+    }
+
+    function locateMe() {
+      if (!navigator.geolocation) { alert('Geolocation not supported by this browser.'); return; }
+      const high = document.getElementById('highAccuracy').checked;
+      navigator.geolocation.getCurrentPosition(
+        pos => _handlePosition(pos, null, true),
+        _handleGeoError,
+        { enableHighAccuracy: high, maximumAge: 0, timeout: 20000 }
+      );
+    }
+
+    document.getElementById('flightAltitude').addEventListener('input', drawChargingStations);
+    drawChargingStations();
+
+    function toggleTracking() {
+      if (!navigator.geolocation) { alert('Geolocation not supported by this browser.'); return; }
+      const btn = document.getElementById('trackBtn');
+      if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+        btn.textContent = 'Start Tracking';
+        return;
+      }
+      const high = document.getElementById('highAccuracy').checked;
+      watchId = navigator.geolocation.watchPosition(
+        pos => _handlePosition(pos, null, true),
+        _handleGeoError,
+        { enableHighAccuracy: high, maximumAge: 1000, timeout: 20000 }
+      );
+      btn.textContent = 'Stop Tracking';
+    }
+  </script>
+</body>
+</html>

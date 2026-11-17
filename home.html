@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Dashboard</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+    <table><th>
+  <div class="dashboard">
+    <!-- Left Section -->
+    <div class="left">
+    
+      <h2>Enjoy Your Flight,<br><span></h2>
+
+          <div class="clock-box">
+   <h1>
+    <h1><div class="clock-time" id="clock">--:--:--</div></h1>
+   <h3> <div class="clock-date" id="date">--</div></h3>
+  </div>
+
+  <div class="vertiport-panel">
+    <div class="panel-header">
+      <span class="live-dot"></span>
+      <h3>Vertiport Status &amp; Clearance Updates</h3>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card success">
+        <span class="label">Operational Vertiports</span>
+        <strong id="stat-operational">08</strong>
+        <small>+1 since last cycle</small>
+      </div>
+      <div class="stat-card primary">
+        <span class="label">Active Clearances</span>
+        <strong id="stat-clearances">24</strong>
+        <small>+4 in queue</small>
+      </div>
+      <div class="stat-card warning">
+        <span class="label">Weather Restrictions</span>
+        <strong id="stat-restrictions">02</strong>
+        <small>Crosswind alerts</small>
+      </div>
+      <div class="stat-card danger">
+        <span class="label">Maintenance Notices</span>
+        <strong id="stat-maintenance">03</strong>
+        <small>Routine checks</small>
+      </div>
+    </div>
+
+    <div class="clearance-panel">
+      <div class="clearance-header">Clearance Updates</div>
+      <div id="clearanceList" class="clearance-list">
+        <div class="clearance-item">
+          <div class="flight-row"><strong>VX-204</strong> <span class="status cleared">Cleared</span></div>
+          <p>Metro Hub → Harbor Link</p>
+          <small>09:45 UTC · Wind corridor stable</small>
+        </div>
+        <div class="clearance-item">
+          <div class="flight-row"><strong>EV-118</strong> <span class="status hold">Hold</span></div>
+          <p>SkyPort West → East Rail</p>
+          <small>09:58 UTC · Traffic sequencing</small>
+        </div>
+        <div class="clearance-item">
+          <div class="flight-row"><strong>AIR-71</strong> <span class="status cleared">Cleared</span></div>
+          <p>Central Terminal → North Gate</p>
+          <small>10:02 UTC · Charging pad ready</small>
+        </div>
+      </div>
+    </div>
+  </div>
+      
+   <!--   <img src="C:\Users\DELL\Desktop\New folder\flight image.webp" alt="Airplane" class="plane"> -->
+
+<!-- Image Slider -
+  <div class="slider">
+    <div class="slides">
+        <img src="C:\Users\DELL\Desktop\New folder\flight image.webp" alt="Airplane" class="plane">
+        <img src="C:\Users\DELL\Desktop\New folder\flight image.webp" alt="Airplane" class="plane">
+     
+    </div>
+    <button class="btn prev">&#10094;</button>
+    <button class="btn next">&#10095;</button>
+  </div>
+-->
+  
+</th>
+  
+<th>
+    <!-- Right Section -->
+    <div class="right">
+      <div class="flight-details">
+        <div class="detail">
+          <h1><span><img src="icon/icons8-search-48.png"></span> </h1>
+          <h1><span><img src="icon/icons8-keyboard-48.png"></span> </h1>
+          <strong><h1><img src="icon/icons8-brightness-48.png"></h1></strong>
+        </div>
+        <div class="detail">
+          <span><h1>Flight Number</h1></span>
+          <strong><h2>GA833 </h2></strong>
+        </div>
+        <div class="detail">
+          <span><h1>Altitude</h1></span>
+          <strong><h1>4,500 ft</h1></strong>
+        </div>
+        <div class="detail">
+          <span><h1>Ground Speed</h1></span>
+          <strong><h1>210 km/h</h1></strong>
+        </div>
+        <div class="detail">
+          <span><img src="icon/icons8-thermometer-automation-48.png"></span>
+          <strong><h1>30°C</h1></strong>
+        </div>
+        <div class="detail">
+          <span><h1>Distance</h1></span>
+          <h1><strong><h1>7,913 km </h1></strong>
+        </div>
+      </div>
+
+      <div class="route">
+        <div class="city">
+          <h2>Bhubaneswar</h2>
+          <p>BBS</p>
+        </div>
+        <div class="progress">
+          <div class="line"></div>
+          <div class="plane-icon"><h1><img src="icon/icons8-plane-48.png"></h1></div>
+        </div>
+        <div class="city">
+          <h2>Bangalore</h2>
+          <p>BLR</p>
+        </div>
+      </div>
+
+      <div class="time-info">
+        <p>10:00 AM</p>
+        <p><strong>1h 10m</strong> Remaining</p>
+        <p>12:00 AM</p>
+      </div>
+
+      <div class="extra">
+        <div>
+          <h1>System Notifications</h1>
+          <div id="systemStatus" style="font-size: 0.9em; line-height: 1.6;">
+            <p style="color: #27ae60; font-weight: bold;">✓ All Systems Operational</p>
+            <p style="font-size: 0.85em; color: #f30404; margin-top: 8px;">
+              Engine • Propeller 1 & 2 • Weather • Turbulance
+            </p>
+            <button onclick="openSystemsCheck()" style="
+              margin-top: 10px;
+              padding: 8px 15px;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              color: white;
+              border: none;
+              border-radius: 5px;
+              cursor: pointer;
+              font-size: 0.85em;
+              font-weight: 600;
+              width: 100%;
+              transition: transform 0.2s;
+            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+              🔍 System Diagnostic
+            </button>
+          </div>
+        </div>
+        <div>
+          <h1><a href="wind/betteryhome.html"><img src="icon/icons8-battery-96.png"></a></h1>
+          <p></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</th>
+</tr>
+<th colspan="2">
+
+  <!-- Bottom Navigation -->
+  <div class="nav">
+   <a href="home.html"> <div><img src="icon/icons8-home-48.png"></div></a>
+   <a href="setting.html"><div><img src="icon/icons8-settings-48.png"></div></a>
+   <a href="phone.html"><div><img src="icon/icons8-phone-48.png"></div></a>
+   <a href=".html"><div><img src="icon/icons8-engine-48.png"></div></a>
+   <a href="map.html"><div><img src="icon/icons8-map-50.png"></div></a>
+   <a href="wind/betteryhome.html"><div><img src="icon/icons8-more-48.png"></div></a>
+  </div>
+</body>
+</html>
+
+
+
+
+<!--time js showing -->
+ <script>
+    const statValues = {
+      operational: [8, 9, 8, 10, 8],
+      clearances: [24, 26, 28, 25, 27],
+      restrictions: [2, 1, 3, 2, 1],
+      maintenance: [3, 4, 3, 2, 3]
+    };
+
+    let statIndex = 0;
+
+    function updateVertiportStats() {
+      const operational = statValues.operational[statIndex % statValues.operational.length];
+      const clearances = statValues.clearances[statIndex % statValues.clearances.length];
+      const restrictions = statValues.restrictions[statIndex % statValues.restrictions.length];
+      const maintenance = statValues.maintenance[statIndex % statValues.maintenance.length];
+
+      document.getElementById('stat-operational').textContent = String(operational).padStart(2, '0');
+      document.getElementById('stat-clearances').textContent = String(clearances).padStart(2, '0');
+      document.getElementById('stat-restrictions').textContent = String(restrictions).padStart(2, '0');
+      document.getElementById('stat-maintenance').textContent = String(maintenance).padStart(2, '0');
+
+      const clearanceList = document.getElementById('clearanceList');
+      const updates = [
+        { flight: 'VX-204', status: 'Cleared', route: 'Metro Hub → Harbor Link', time: '09:45 UTC', note: 'Wind corridor stable' },
+        { flight: 'EV-118', status: 'Hold', route: 'SkyPort West → East Rail', time: '09:58 UTC', note: 'Traffic sequencing' },
+        { flight: 'AIR-71', status: 'Cleared', route: 'Central Terminal → North Gate', time: '10:02 UTC', note: 'Charging pad ready' },
+        { flight: 'VT-905', status: 'Monitoring', route: 'South Deck → Airport Loop', time: '10:10 UTC', note: 'Visibility review' }
+      ];
+git 
+      const rotated = [...updates.slice(statIndex % updates.length), ...updates.slice(0, statIndex % updates.length)];
+      clearanceList.innerHTML = rotated.slice(0, 3).map(item => {
+        const badgeClass = item.status === 'Cleared' ? 'cleared' : item.status === 'Hold' ? 'hold' : 'monitor';
+        return `
+          <div class="clearance-item">
+            <div class="flight-row"><strong>${item.flight}</strong> <span class="status ${badgeClass}">${item.status}</span></div>
+            <p>${item.route}</p>
+            <small>${item.time} · ${item.note}</small>
+          </div>
+          
+        `;
+      }).join('');
+         
+      statIndex += 1;
+    }
+
+    function updateClock() {
+      const now = new Date();
+
+      // Format Time
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      let seconds = now.getSeconds();
+
+      // Add AM/PM
+      let ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12;
+      hours = hours ? hours : 12; // 0 becomes 12
+
+      // Add leading zeros
+      hours = hours.toString().padStart(2, '0');
+      minutes = minutes.toString().padStart(2, '0');
+      seconds = seconds.toString().padStart(2, '0');
+
+      const timeString = `${hours}:${minutes}:${seconds} ${ampm}`;
+      document.getElementById("clock").textContent = timeString;
+
+      // Format Date
+      const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+      document.getElementById("date").textContent = now.toLocaleDateString(undefined, options);
+    }
+
+    // Update every second
+    setInterval(updateClock, 1000);
+    setInterval(updateVertiportStats, 8000);
+    updateClock();
+    updateVertiportStats();
+  </script>
+
+  <script>
+    const slides = document.querySelector('.slides');
+    const prev = document.querySelector('.prev');
+    const next = document.querySelector('.next');
+
+    if (slides && prev && next) {
+      const dashboard = document.querySelector('.dashboard');
+      let index = 0;
+
+      const records = [
+        { title: "Propeller", detail: "Status: Running at 1200 RPM" },
+        { title: "Height", detail: "Current Height: 250m" },
+        { title: "Altitude", detail: "Altitude Level: 1500m above sea" },
+        { title: "Battery", detail: "Battery Remaining: 78%" }
+      ];
+
+      function updateSlide() {
+        slides.style.transform = `translateX(${-index * 600}px)`;
+        dashboard.innerHTML = `
+          <h2>${records[index].title}</h2>
+          <p>${records[index].detail}</p>
+        `;
+      }
+
+      next.addEventListener('click', () => {
+        index = (index + 1) % records.length;
+        updateSlide();
+      });
+
+      prev.addEventListener('click', () => {
+        index = (index - 1 + records.length) % records.length;
+        updateSlide();
+      });
+
+      updateSlide();
+    }
+  </script>
+
+  <!-- System Diagnostic Function -->
+  <script>
+    function openSystemsCheck() {
+      window.location.href = 'systems_check.html';
+    }
+  </script>

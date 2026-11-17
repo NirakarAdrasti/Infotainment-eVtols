@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Battery Dashboard</title>
+
+<style>
+:root {
+    --bg: #020617;
+    --card: #111827;
+    --accent: #22c55e;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #e5e7eb;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at top, #020617, #0f172a);
+    font-family: "Segoe UI", sans-serif;
+    color: var(--text);
+}
+
+.dashboard {
+    width: 420px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 25px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* Vertical stack */
+.cards {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.card {
+    background: linear-gradient(180deg, #111827, #020617);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: scale(1.03);
+}
+
+.card h3 {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-bottom: 10px;
+}
+
+.value {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* Battery bar */
+.battery-bar {
+    margin-top: 12px;
+    height: 14px;
+    background: #1f2933;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.battery-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #22c55e, #4ade80);
+    transition: width 0.6s ease, background 0.6s ease;
+}
+
+/* Health colors */
+.good { color: #22c55e; }
+.medium { color: #f59e0b; }
+.bad { color: #ef4444; }
+
+</style>
+</head>
+
+<body>
+
+<div class="dashboard">
+    <h1>Battery Dashboard</h1>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Battery Charge Level</h3>
+            <div class="value"><span id="battery">--</span>%</div>
+            <div class="battery-bar">
+                <div class="battery-fill" id="batteryFill"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Power Consumption Rate</h3>
+            <div class="value"><span id="power">--</span> W</div>
+        </div>
+
+        <div class="card">
+            <h3>Estimated Remaining Flight Time</h3>
+            <div class="value"><span id="time">--</span> mins</div>
+        </div>
+
+        <div class="card">
+            <h3>Battery Health</h3>
+            <div class="value" id="health">--</div>
+        </div>
+
+        <div class="card">
+            <h3>Battery Temperature</h3>
+            <div class="value"><span id="temp">--</span> °C</div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function updateDashboard() {
+    const battery = Math.floor(Math.random() * 41) + 60;
+    const power = Math.floor(Math.random() * 70) + 90;
+    const temp = Math.floor(Math.random() * 12) + 28;
+    const time = Math.floor(battery * 0.65);
+
+    document.getElementById("battery").innerText = battery;
+    document.getElementById("power").innerText = power;
+    document.getElementById("time").innerText = time;
+    document.getElementById("temp").innerText = temp;
+
+    const fill = document.getElementById("batteryFill");
+    fill.style.width = battery + "%";
+
+    const health = document.getElementById("health");
+
+    if (battery >= 80) {
+        health.innerText = "Excellent";
+        health.className = "value good";
+        fill.style.background = "linear-gradient(90deg,#22c55e,#4ade80)";
+    } 
+    else if (battery >= 60) {
+        health.innerText = "Good";
+        health.className = "value medium";
+        fill.style.background = "linear-gradient(90deg,#f59e0b,#fbbf24)";
+    } 
+    else {
+        health.innerText = "Critical";
+        health.className = "value bad";
+        fill.style.background = "linear-gradient(90deg,#ef4444,#f87171)";
+    }
+}
+
+updateDashboard();
+setInterval(updateDashboard, 3000);
+</script>
+
+</body>
+</html>

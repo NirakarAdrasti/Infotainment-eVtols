@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Dashboard</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Left Section -->
+    <div class="left">
+    
+      <h2>Enjoy Your Flight,<br><span></h2>
+
+          <div class="clock-box">
+   <h1>
+    <h1><div class="clock-time" id="clock">--:--:--</div></h1>
+   <h3> <div class="clock-date" id="date">--</div></h3>
+  </div>
+      
+      <img src="C:\Users\DELL\Desktop\New folder\flight image.webp" alt="Airplane" class="plane">
+    </div>
+
+    <!-- Right Section -->
+    <div class="right">
+      <div class="flight-details">
+        <div class="detail">
+          <h1><span><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-search-48.png"></span> </h1>
+          <h1><span><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-keyboard-48.png"></span> </h1>
+          <strong><h1><img src="icon/icons8-brightness-48.png"></h1></strong>
+        </div>
+        <div class="detail">
+          <span><h1>Flight Number</h1></span>
+          <strong><h2>GA833 </h2></strong>
+        </div>
+        <div class="detail">
+          <span><h1>Altitude</h1></span>
+          <strong><h1>4,500 ft</h1></strong>
+        </div>
+        <div class="detail">
+          <span><h1>Ground Speed</h1></span>
+          <strong><h1>210 km/h</h1></strong>
+        </div>
+        <div class="detail">
+          <span><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-thermometer-automation-48.png"></span>
+          <strong><h1>30°C</h1></strong>
+        </div>
+        <div class="detail">
+          <span><h1>Distance</h1></span>
+          <h1><strong><h1>7,913 km </h1></strong>
+        </div>
+      </div>
+
+      <div class="route">
+        <div class="city">
+          <h2>Bhubaneswar</h2>
+          <p>BBS</p>
+        </div>
+        <div class="progress">
+          <div class="line"></div>
+          <div class="plane-icon"><h1><img src="icon/icons8-plane-48.png"></h1></div>
+        </div>
+        <div class="city">
+          <h2>Bangalore</h2>
+          <p>BLR</p>
+        </div>
+      </div>
+
+      <div class="time-info">
+        <p>10:00 AM</p>
+        <p><strong>1h 10m</strong> Remaining</p>
+        <p>12:00 AM</p>
+      </div>
+
+      <div class="extra">
+        <div>
+          <h1>Notifications</h1>
+          <p>Bengaluru has no active weather alerts, but moderate rain and firefog-like humidity are in the forecast. </p>
+        </div>
+        <div>
+          <h1><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-battery-96.png"></h1>
+          <p></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="nav">
+    <div><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-home-48.png"></div>
+    <div><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-settings-48.png"></div>
+    <div><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-phone-48.png"></div>
+    <div><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-engine-48.png"></div>
+    <div><img src="C:\Users\DELL\Desktop\New folder\icon\icons8-more-48.png"></div>
+  </div>
+</body>
+</html>
+
+
+
+
+<!--time js showing -->
+ <script>
+    function updateClock() {
+      const now = new Date();
+
+      // Format Time
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      let seconds = now.getSeconds();
+
+      // Add AM/PM
+      let ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12;
+      hours = hours ? hours : 12; // 0 becomes 12
+
+      // Add leading zeros
+      hours = hours.toString().padStart(2, '0');
+      minutes = minutes.toString().padStart(2, '0');
+      seconds = seconds.toString().padStart(2, '0');
+
+      const timeString = `${hours}:${minutes}:${seconds} ${ampm}`;
+      document.getElementById("clock").textContent = timeString;
+
+      // Format Date
+      const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+      document.getElementById("date").textContent = now.toLocaleDateString(undefined, options);
+    }
+
+    // Update every second
+    setInterval(updateClock, 1000);
+    updateClock(); // Initial call
+  </script>
+

@@ -1,0 +1,245 @@
+/* Reset + Background */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  background: url("icon/background image.jpg") no-repeat center center fixed;
+  background-size: cover;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+ 
+}
+table {
+width: 100%;
+  height: 930px;
+  object-fit: cover;
+}
+
+/* ===== Image Slider ===== */
+.slider {
+  position: relative;
+  width: 100%;
+  max-width: 500px;  /* flight image width */
+  height: 350px;     /* flight image height */
+  overflow: hidden;
+  border-radius: 10px;
+  margin-top: 0px;
+  margin-left: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+}
+
+.slides {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.7s ease-in-out;
+}
+
+.slides img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Buttons */
+.btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 50%;
+}
+
+.btn:hover {
+  background: rgba(0,0,0,0.9);
+}
+
+.prev { left: 15px; }
+.next { right: 15px; }
+
+/* ===== Dashboard Layout ===== */
+.dashboard {
+  display: flex;
+  flex: 1;
+  padding: 10px;
+}
+
+/* Left Panel */
+.left {
+  flex: 1;
+  padding: 10px;
+}
+
+.logo {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.left h2 {
+  font-size: 26px;
+  margin-bottom: 10px;
+}
+
+.left h2 span {
+  font-weight: bold;
+  color: #4fc3f7;
+}
+
+.aircraft {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+/* Right Panel */
+.right {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 15px;
+}
+
+.flight-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 35px;
+}
+
+.detail span {
+  font-size: 12px;
+  color: #ccc;
+}
+
+.detail strong {
+  font-size: 16px;
+  display: block;
+  margin-top: 4px;
+}
+
+/* Route Section */
+.route {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.city {
+  text-align: center;
+  flex: 1;
+}
+
+.progress {
+  flex: 2;
+  position: relative;
+  margin: 0 10px;
+}
+
+.line {
+  height: 2px;
+  background: #4fc3f7;
+  margin-top: 10px;
+}
+
+.plane-icon {
+  position: absolute;
+  top: -10px;
+  left: 40%;
+  font-size: 20px;
+}
+
+/* Time Info */
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+/* Extra Info */
+.extra {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.extra h4 {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+/* Bottom Navigation */
+.nav {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 12px;
+  font-size: 54px;
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+
+/* ===== Clock Box ===== */
+.clock-box {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 20px 40px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
+}
+
+.clock-title {
+  font-size: 16px;
+  color: #aaa;
+  margin-bottom: 8px;
+}
+
+.clock-time {
+  font-size: 36px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #4fc3f7;
+}
+
+.clock-date {
+  font-size: 14px;
+  margin-top: 5px;
+  color: #ddd;
+}
+
+
+th{
+  height: 100% ;
+  width:fit-content;
+}
+
+
+
+/*slide page data*/
+ .prev { left: 10px; }
+    .next { right: 10px; }
+
+    /* Dashboard */
+    .dashboard {
+      width: 600px;
+      padding: 15px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 15px;
+      text-align: center;
+    }
+
+    .dashboard h2 {
+      margin-bottom: 10px;
+      color: #4fc3f7;
+    }
+
+    .dashboard p {
+      font-size: 18px;
+    }

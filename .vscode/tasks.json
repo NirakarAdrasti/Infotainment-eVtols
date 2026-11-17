@@ -1,0 +1,195 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Install Root Python Dependencies",
+      "type": "shell",
+      "command": "pip",
+      "args": [
+        "install",
+        "-r",
+        "requirements.txt"
+      ],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Main Python Script",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "main.py"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Object Detection",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "object_detection.py"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Height Altitude Detection",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "height_altitude.py"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "FastAPI: Start Weather Backend",
+      "type": "shell",
+      "command": "cd",
+      "args": [
+        "jay_tiwari/backend",
+        "&&",
+        "pip",
+        "install",
+        "-r",
+        "requirements.txt",
+        "&&",
+        "uvicorn",
+        "main:app",
+        "--reload"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": [],
+      "isBackground": true
+    },
+    {
+      "label": "FastAPI: Start Emergency Procedure Backend",
+      "type": "shell",
+      "command": "cd",
+      "args": [
+        "jay_tiwari/Emergency Procedure Prompts",
+        "&&",
+        "pip",
+        "install",
+        "-r",
+        "requirements.txt",
+        "&&",
+        "uvicorn",
+        "app.main:app",
+        "--reload"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": [],
+      "isBackground": true
+    },
+    {
+      "label": "React: Install Dependencies",
+      "type": "shell",
+      "command": "cd",
+      "args": [
+        "jay_tiwari/weather\\ UI\\ \\(react\\ version2\\)",
+        "&&",
+        "npm",
+        "install"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "React: Dev Server",
+      "type": "shell",
+      "command": "cd",
+      "args": [
+        "jay_tiwari/weather\\ UI\\ \\(react\\ version2\\)",
+        "&&",
+        "npm",
+        "run",
+        "dev"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": [],
+      "isBackground": true
+    },
+    {
+      "label": "React: Build Production",
+      "type": "shell",
+      "command": "cd",
+      "args": [
+        "jay_tiwari/weather\\ UI\\ \\(react\\ version2\\)",
+        "&&",
+        "npm",
+        "run",
+        "build"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": [
+        "$tsc"
+      ]
+    },
+    {
+      "label": "React: Lint",
+      "type": "shell",
+      "command": "cd",
+      "args": [
+        "jay_tiwari/weather\\ UI\\ \\(react\\ version2\\)",
+        "&&",
+        "npm",
+        "run",
+        "lint"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": [
+        "$eslint-stylish"
+      ]
+    },
+    {
+      "label": "React: Preview Production Build",
+      "type": "shell",
+      "command": "cd",
+      "args": [
+        "jay_tiwari/weather\\ UI\\ \\(react\\ version2\\)",
+        "&&",
+        "npm",
+        "run",
+        "preview"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": [],
+      "isBackground": true
+    }
+  ]
+}
